@@ -3,5 +3,5 @@ import { WeedEmbedData } from "./types/types";
 import { getStateThread } from "./getLogThread";
 
 export function logStateData(guild: Guild, data: WeedEmbedData) {
-  getStateThread(guild).send(JSON.stringify(data))
+  return getStateThread(guild).send(JSON.stringify(data))
 }

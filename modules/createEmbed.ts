@@ -53,5 +53,6 @@ export function createEmbed(data: WeedEmbedData) {
           return { name: `📈 Kurs`, value: `<@${rate.user}> ${rate.percent * 100}%`, inline: true }
         })
       )
+    .setFooter({ text: 'Alle Preise sind in Schwarzgeld gerechnet' })
   ]
 }

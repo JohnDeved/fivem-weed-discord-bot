@@ -1,9 +1,10 @@
-import { ActivityType, Client, GatewayIntentBits, TextChannel } from 'discord.js'
+import { ActivityType, ButtonInteraction, ChatInputCommandInteraction, Client, GatewayIntentBits, TextChannel } from 'discord.js'
 import { onBotInit } from './modules/onBotInit'
 import { onWeedMessage } from './modules/onWeedMessage'
 import { onBotFirstMessage } from './modules/onBotFirstMessage'
 import { botCommands } from './modules/commands'
 import { config } from 'dotenv'
+import { botButtons } from './modules/buttons'
 config()
 
 const client = new Client({
@@ -56,10 +57,17 @@ client.on('messageCreate', message => {
 })
 
 client.on('interactionCreate', async interaction => {
-  if (interaction.isCommand()) {
+  if (interaction.isCommand() && interaction instanceof ChatInputCommandInteraction) {
     const command = botCommands.find(c => c.command.name === interaction.commandName)
-    if (command) {
+    if (command?.callback) {
       command.callback(interaction)
+    }
+  }
+
+  if (interaction.isButton() && interaction instanceof ButtonInteraction) {
+    const button = botButtons.find(b => b.id === interaction.customId)
+    if (button?.callback) {
+      button.callback(interaction)
     }
   }
 })

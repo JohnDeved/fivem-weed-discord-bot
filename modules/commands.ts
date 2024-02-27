@@ -8,83 +8,75 @@ import { logStateData } from "./logStateData";
 export const botCommands = [
   {
     command: new SlashCommandBuilder().setName('reset').setDescription('setzt alle Werte zurück'),
-    callback: async (interaction: Interaction) => {
-      if (interaction instanceof ChatInputCommandInteraction) {
-        const botMessage = await getBotMessage(interaction.guild!)
+    callback: async (interaction: ChatInputCommandInteraction) => {
+      const botMessage = await getBotMessage(interaction.guild!)
 
-        logStateData(interaction.guild!, defaultEmbedData)
-        botMessage.edit(createMessage(defaultEmbedData))
+      await interaction.reply({ ephemeral: true, content: 'Werte wurden zurückgesetzt' })
 
-        interaction.reply({ ephemeral: true, content: 'Werte wurden zurückgesetzt' })
-      }
+      await logStateData(interaction.guild!, defaultEmbedData)
+      await botMessage.edit(createMessage(defaultEmbedData))
     }
   },
   {
     command: new SlashCommandBuilder().setName('refresh').setDescription('lädt die Werte neu'),
-    callback: async (interaction: Interaction) => {
-      if (interaction instanceof ChatInputCommandInteraction) {
-        const botMessage = await getBotMessage(interaction.guild!)
-        const data = await getEmbedData(botMessage)
+    callback: async (interaction: ChatInputCommandInteraction) => {
+      const botMessage = await getBotMessage(interaction.guild!)
+      const data = await getEmbedData(botMessage)
 
-        interaction.reply({ ephemeral: true, content: 'Werte wurden neu geladen' })
-        
-        botMessage.edit(createMessage(data))
-      }
+      await interaction.reply({ ephemeral: true, content: 'Werte wurden neu geladen' })
+      
+      await botMessage.edit(createMessage(data))
     }
   },
   {
     command: new SlashCommandBuilder().setName('kurs').setDescription('setzt den Kurs für ein Member oder Fraktion')
       .addMentionableOption(option => option.setName('member').setDescription('[@Kavkaz] Member/Fraktion für den der Kurs gesetzt werden soll').setRequired(true))
       .addIntegerOption(option => option.setName('kurs').setDescription('[95] Kurs der gesetzt werden soll').setRequired(true)),
-    callback: async (interaction: Interaction) => {
-      if (interaction instanceof ChatInputCommandInteraction) {
-        const botMessage = await getBotMessage(interaction.guild!)
-        const data = await getEmbedData(botMessage)
+    callback: async (interaction: ChatInputCommandInteraction) => {
+      const botMessage = await getBotMessage(interaction.guild!)
+      const data = await getEmbedData(botMessage)
 
-        // if data.payouts.payments does not contain value for member, add it
-        const member = interaction.options.getMentionable('member')!
-        const kurs = interaction.options.getInteger('kurs')!
+      // if data.payouts.payments does not contain value for member, add it
+      const member = interaction.options.getMentionable('member')!
+      const kurs = interaction.options.getInteger('kurs')!
 
-        if (member instanceof GuildMember || member instanceof Role) {
-          let displayId = member.id
-          if (member instanceof Role) displayId = '&' + member.id
+      if (member instanceof GuildMember || member instanceof Role) {
+        let displayId = member.id
+        if (member instanceof Role) displayId = '&' + member.id
 
-          // find and remove old value
-          const index = data.payouts.rate.findIndex(p => p.user === member.id)
-          if (index > -1) data.payouts.rate.splice(index, 1)
+        // find and remove old value
+        const index = data.payouts.rate.findIndex(p => p.user === member.id)
+        if (index > -1) data.payouts.rate.splice(index, 1)
 
-          // add new value
-          data.payouts.rate.push({ user: displayId, percent: kurs / 100 })
-          
-          await interaction.reply({ 
-            ephemeral: true, 
-            content: `Kurs für ${member} wurde auf \`${interaction.options.getInteger('kurs')}%\` gesetzt` 
-          })
-          
-          logStateData(interaction.guild!, data)
-          await botMessage.edit(createMessage(data))          
-        }
+        // add new value
+        data.payouts.rate.push({ user: displayId, percent: kurs / 100 })
+        
+        await interaction.reply({ 
+          ephemeral: true, 
+          content: `Kurs für ${member} wurde auf \`${interaction.options.getInteger('kurs')}%\` gesetzt` 
+        })
+        
+        await logStateData(interaction.guild!, data)
+        await botMessage.edit(createMessage(data))          
       }
     }
   },
   {
     command: new SlashCommandBuilder().setName('preis').setDescription('setzt den Preis pro 🌿 Blatt')
       .addIntegerOption(option => option.setName('preis').setDescription('[460] Preis der gesetzt werden soll').setRequired(true)),
-    callback: async (interaction: Interaction) => {
-      if (interaction instanceof ChatInputCommandInteraction) {
-        const botMessage = await getBotMessage(interaction.guild!)
-        const data = await getEmbedData(botMessage)
+    callback: async (interaction: ChatInputCommandInteraction) => {
+      const botMessage = await getBotMessage(interaction.guild!)
+      const data = await getEmbedData(botMessage)
 
-        data.payouts.price = interaction.options.getInteger('preis')!
+      data.payouts.price = interaction.options.getInteger('preis')!
 
-        await interaction.reply({ 
-          ephemeral: true, 
-          content: `Preis pro 🌿 Blatt wurde auf \`${interaction.options.getInteger('preis')}\` gesetzt`
-        })
+      await interaction.reply({ 
+        ephemeral: true, 
+        content: `Preis pro 🌿 Blatt wurde auf \`${interaction.options.getInteger('preis')}\` gesetzt`
+      })
 
-        logStateData(interaction.guild!, data)
-        await botMessage.edit(createMessage(data))
-      }
+      await logStateData(interaction.guild!, data)
+      await botMessage.edit(createMessage(data))
     }
   }
 ]
