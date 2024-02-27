@@ -1,9 +1,9 @@
 import { ChatInputCommandInteraction, GuildMember, Interaction, Role, SlashCommandBuilder } from "discord.js";
-import { getBotMessage } from "./getBotMessage";
+import { createMessage } from "./createMessage";
 import { defaultEmbedData } from "./defaultEmbedData";
-import { createEmbed } from "./createEmbed";
-import { logStateData } from "./logStateData";
+import { getBotMessage } from "./getBotMessage";
 import { getEmbedData } from "./getEmbedData";
+import { logStateData } from "./logStateData";
 
 export const botCommands = [
   {
@@ -13,8 +13,7 @@ export const botCommands = [
         const botMessage = await getBotMessage(interaction.guild!)
 
         logStateData(interaction.guild!, defaultEmbedData)
-        const embeds = createEmbed(defaultEmbedData)
-        botMessage.edit({ embeds })
+        botMessage.edit(createMessage(defaultEmbedData))
 
         interaction.reply({ ephemeral: true, content: 'Werte wurden zurückgesetzt' })
       }
@@ -29,8 +28,7 @@ export const botCommands = [
 
         interaction.reply({ ephemeral: true, content: 'Werte wurden neu geladen' })
         
-        const embeds = createEmbed(data)
-        botMessage.edit({ embeds })
+        botMessage.edit(createMessage(data))
       }
     }
   },
@@ -64,7 +62,7 @@ export const botCommands = [
           })
           
           logStateData(interaction.guild!, data)
-          await botMessage.edit({ embeds: createEmbed(data) })          
+          await botMessage.edit(createMessage(data))          
         }
       }
     }
@@ -85,7 +83,7 @@ export const botCommands = [
         })
 
         logStateData(interaction.guild!, data)
-        await botMessage.edit({ embeds: createEmbed(data) })
+        await botMessage.edit(createMessage(data))
       }
     }
   }

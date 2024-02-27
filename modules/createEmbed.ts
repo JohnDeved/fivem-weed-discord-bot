@@ -6,7 +6,6 @@ function formatMoney(amount: number) {
 }
 
 export function createEmbed(data: WeedEmbedData) {
-
   return [
     new EmbedBuilder()
       .setTitle('⚙️ Labor Maschinen')

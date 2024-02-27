@@ -1,13 +1,11 @@
 import { TextChannel } from "discord.js";
-import { createEmbed } from "./createEmbed";
+import { createMessage } from "./createMessage";
 import { defaultEmbedData } from "./defaultEmbedData";
 
 export async function onBotFirstMessage (channel: TextChannel) {
   const msgState = await channel.send('`state`')
 
-  const msg = await channel.send({
-    embeds: createEmbed(defaultEmbedData)
-  })
+  const msg = await channel.send(createMessage(defaultEmbedData))
 
   msg.startThread({
     name: 'Labor Log'

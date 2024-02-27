@@ -1,4 +1,4 @@
-import { Client, Guild, TextChannel } from 'discord.js';
+import { Guild, TextChannel } from 'discord.js';
 
 export async function getBotMessage(guild: Guild) {
   // get channel named weed-labor-bot

@@ -4,6 +4,7 @@ import { createEmbed } from './createEmbed'
 import { getBotMessage } from './getBotMessage'
 import { getLogThread } from './getLogThread'
 import { logStateData } from './logStateData'
+import { createMessage } from './createMessage'
 
 export const typeDict = {
   leaves: '🌿 Blätter',
@@ -66,8 +67,7 @@ export async function onWeedMessage(message: Message) {
   }
 
   logStateData(message.guild!, embedData)
-  const embeds = createEmbed(embedData)
-  botMessage.edit({ embeds })
+  botMessage.edit(createMessage(embedData))
 
   // react to original message with checkmark
   message.react('✅')
