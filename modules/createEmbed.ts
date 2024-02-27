@@ -39,7 +39,7 @@ export function createEmbed(data: WeedEmbedData) {
       )
       .addFields(
         data.payouts.rate.map(rate => {
-          return { name: `📈 Kurs <@${rate.user}>`, value: `${rate.percent * 100}%`, inline: true }
+          return { name: `📈 Kurs`, value: `<@${rate.user}> ${rate.percent * 100}%`, inline: true }
         })
       )
   ]

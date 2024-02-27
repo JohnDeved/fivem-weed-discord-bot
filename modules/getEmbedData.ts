@@ -1,13 +1,13 @@
-import { Message, APIEmbedField } from 'discord.js'
-import { WeedEmbedData, FieldParams } from './types/types'
-import { getStateThread } from './getLogThread'
+import { Message } from 'discord.js'
 import { defaultEmbedData } from './defaultEmbedData'
+import { getStateThread } from './getLogThread'
+import { WeedEmbedData } from './types/types'
 
-export function getEmbedData(botMessage: Message): WeedEmbedData {
+export async function getEmbedData(botMessage: Message): Promise<WeedEmbedData> {
   const stateThread = getStateThread(botMessage.guild!)
 
   // get first message
-  const stateStr = stateThread.messages.cache.first()?.content
+  const stateStr = await stateThread.messages.fetch().then(messages => messages.first()?.content)
   let state: WeedEmbedData
 
   try {
@@ -18,16 +18,4 @@ export function getEmbedData(botMessage: Message): WeedEmbedData {
 
   console.log(state)
   return state
-}
-
-function extractFieldParams(field: APIEmbedField): FieldParams {
-  const amount = parseInt(field.value.split(' ')[0].replace(/[`.]/g, ''))
-  const timestamp = extractTimestamp(field.value)
-  return { amount, timestamp }
-}
-
-function extractTimestamp(value: string): number {
-  // if (!value.includes('<t:')) return 0
-  const timestampString = value.split('<t:')[1].split(':R>')[0]
-  return parseInt(timestampString)
 }

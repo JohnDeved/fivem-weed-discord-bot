@@ -38,7 +38,7 @@ export async function onWeedMessage(message: Message) {
   logThread.send(`Es wurde für <@${user}> \`${isAdd ? '+' : '-' }${amount}\` ${typeDict[type]} im **${isLab ? 'Labor Lager' : 'Frak Lager'}** ${isAdd ? 'eingelagert' : 'ausgelagert'}!`)
 
   const botMessage = await getBotMessage(message.guild!)
-  let embedData = getEmbedData(botMessage)
+  let embedData = await getEmbedData(botMessage)
 
   if (isLab) {
     embedData.lab[type].amount += isAdd ? amount : -amount
