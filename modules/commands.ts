@@ -18,7 +18,8 @@ export const botCommands = [
     }
   },
   {
-    command: new SlashCommandBuilder().setName('refresh').setDescription('lädt die Werte neu'),
+    command: new SlashCommandBuilder().setName('refresh').setDescription('lädt die Werte neu')
+      .addStringOption(option => option.setName('json').setDescription('json rollback').setRequired(false)),
     callback: async (interaction: ChatInputCommandInteraction) => {
       const botMessage = await getBotMessage(interaction.guild!)
       const data = await getEmbedData(botMessage)
