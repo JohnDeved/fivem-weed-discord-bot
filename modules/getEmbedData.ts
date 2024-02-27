@@ -1,54 +1,23 @@
 import { Message, APIEmbedField } from 'discord.js'
 import { WeedEmbedData, FieldParams } from './types/types'
+import { getStateThread } from './getLogThread'
+import { defaultEmbedData } from './defaultEmbedData'
 
 export function getEmbedData(botMessage: Message): WeedEmbedData {
-  const [machineEmbed, labEmbed, storeEmbed, payoutsEmbed] = botMessage.embeds
+  const stateThread = getStateThread(botMessage.guild!)
 
-  if (!machineEmbed || !labEmbed || !storeEmbed) {
-    throw new Error('Embeds are missing')
+  // get first message
+  const stateStr = stateThread.messages.cache.first()?.content
+  let state: WeedEmbedData
+
+  try {
+    state = JSON.parse(stateStr!)
+  } catch (error) {
+    state = defaultEmbedData
   }
 
-  const [powderTime, bluntsTime] = machineEmbed.fields.map(field => extractTimestamp(field.value))
-  const machines = { powderTime, bluntsTime }
-  console.log({machines})
-
-  const [leaves, powder, blunts] = labEmbed.fields.map(extractFieldParams)
-  const lab = { leaves, powder, blunts }
-  console.log({lab})
-
-  const [storeLeaves, storeBlunts] = storeEmbed.fields.map(extractFieldParams)
-  const store = { leaves: storeLeaves, blunts: storeBlunts }
-  console.log({store})
-
-  // get payouts data
-  const payments = payoutsEmbed.description?.includes('Keine Auszahlungen ausstehend') 
-    ? [] 
-    : payoutsEmbed.description?.split('\n').map(payment => {
-      const [, user, amount, timestamp] = payment.split(' ')
-      console.log('payment', {user, amount, timestamp})
-      return { user: user.replace(/[<>@:]/g, ''), amount: parseInt(amount.replace(/[`.€]/g, '')), timestamp: extractTimestamp(timestamp) }
-    }).filter(Boolean) ?? []
-  console.log({payments})
-
-  const price = parseInt(payoutsEmbed.fields[0].value.split(' ')[0])
-  console.log({price})
-
-  const rate = payoutsEmbed.fields.slice(1).map(field => {
-    const [user, percent] = field.value.split(' ')
-    return { user: user.replace(/[<>@]/g, ''), percent: parseInt(percent) / 100 }
-  })
-  console.log({rate})
-
-  return {
-    machines,
-    lab,
-    store,
-    payouts: {
-      payments,
-      price,
-      rate
-    }
-  }
+  console.log(state)
+  return state
 }
 
 function extractFieldParams(field: APIEmbedField): FieldParams {

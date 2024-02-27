@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, Interaction, SlashCommandBuilder } from "d
 import { getBotMessage } from "./getBotMessage";
 import { defaultEmbedData } from "./defaultEmbedData";
 import { createEmbed } from "./createEmbed";
+import { logStateData } from "./logStateData";
 
 export const botCommands = [
   {
@@ -9,6 +10,8 @@ export const botCommands = [
     callback: async (interaction: Interaction) => {
       if (interaction instanceof ChatInputCommandInteraction) {
         const botMessage = await getBotMessage(interaction.guild!)
+        logStateData(interaction.guild!, defaultEmbedData)
+        
         const embeds = createEmbed(defaultEmbedData)
         botMessage.edit({ embeds })
 

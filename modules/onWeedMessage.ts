@@ -3,6 +3,7 @@ import { getEmbedData } from './getEmbedData'
 import { createEmbed } from './createEmbed'
 import { getBotMessage } from './getBotMessage'
 import { getLogThread } from './getLogThread'
+import { logStateData } from './logStateData'
 
 export const typeDict = {
   leaves: '🌿 Blätter',
@@ -71,6 +72,7 @@ export async function onWeedMessage(message: Message) {
     }
   }
 
+  logStateData(message.guild!, embedData)
   const embeds = createEmbed(embedData)
   botMessage.edit({ embeds })
 
