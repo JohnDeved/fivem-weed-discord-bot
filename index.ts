@@ -1,10 +1,10 @@
 import { ActivityType, ButtonInteraction, ChatInputCommandInteraction, Client, GatewayIntentBits, TextChannel } from 'discord.js'
-import { onBotInit } from './modules/onBotInit'
-import { onWeedMessage } from './modules/onWeedMessage'
-import { onBotFirstMessage } from './modules/onBotFirstMessage'
-import { botCommands } from './modules/commands'
 import { config } from 'dotenv'
 import { botButtons } from './modules/buttons'
+import { botCommands } from './modules/commands'
+import { onBotFirstMessage } from './modules/onBotFirstMessage'
+import { onBotInit } from './modules/onBotInit'
+import { onWeedMessage } from './modules/onWeedMessage'
 config()
 
 const client = new Client({

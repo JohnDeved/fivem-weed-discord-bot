@@ -41,7 +41,7 @@ export function createEmbed(data: WeedEmbedData) {
           // add or subtract amount * rate * price
           const payout = payment.amount * rate * price
 
-          return `👤 <@${payment.user}>: \`${formatMoney(payout)} [🌿x${payment.amount}]\` <t:${payment.timestamp}:R>`
+          return `<@${payment.user}>: \`${formatMoney(payout)} [🌿x${payment.amount}]\` <t:${payment.timestamp}:R>`
         }).join('\n')
         : 'Keine Auszahlungen ausstehend' 
       )

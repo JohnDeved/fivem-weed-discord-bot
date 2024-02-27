@@ -1,7 +1,7 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle } from "discord.js"
-import { getEmbedData } from "./getEmbedData"
-import { LabMachinesKeys, WeedEmbedData } from "./types/types"
+import { ButtonBuilder, ButtonInteraction, ButtonStyle } from "discord.js"
 import { updateBotMessage } from "./getBotMessage"
+import { getEmbedData } from "./getEmbedData"
+import { LabMachinesKeys } from "./types/types"
 
 const Times = {
   PowderMachine: 1000 * 60 * 30,

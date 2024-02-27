@@ -1,9 +1,7 @@
 import { Message } from 'discord.js'
-import { createMessage } from './createMessage'
-import { getBotMessage, updateBotMessage } from './getBotMessage'
+import { updateBotMessage } from './getBotMessage'
 import { getEmbedData } from './getEmbedData'
 import { getLogThread } from './getLogThread'
-import { logStateData } from './logStateData'
 
 export const typeDict = {
   leaves: '🌿 Blätter',
@@ -50,18 +48,15 @@ export async function onWeedMessage(message: Message) {
   }
 
   if (type === 'leaves') {
-
-    // if is type leaves and user is not in payouts, add user to payouts
-    if (type === 'leaves' && !embedData.payouts.payments.find(payment => payment.user === user)) {
-      embedData.payouts.payments.push({ user, amount: 0, timestamp: Math.floor(Date.now() / 1000) })
+    let payment = embedData.payouts.payments.find(payment => payment.user === user);
+    
+    if (!payment) {
+      payment = { user, amount: 0, timestamp: Math.floor(Date.now() / 1000) };
+      embedData.payouts.payments.push(payment);
     }
-  
-    for (const payment of embedData.payouts.payments) {
-      if (payment.user === user && type === 'leaves') {
-        payment.amount += isAdd ? amount : -amount
-        payment.timestamp = Math.floor(Date.now() / 1000)
-      }
-    }
+    
+    payment.amount += isAdd ? amount : -amount;
+    payment.timestamp = Math.floor(Date.now() / 1000);
   }
 
   await updateBotMessage(message.guild!, embedData)
