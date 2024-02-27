@@ -11,12 +11,26 @@ export const botCommands = [
     callback: async (interaction: Interaction) => {
       if (interaction instanceof ChatInputCommandInteraction) {
         const botMessage = await getBotMessage(interaction.guild!)
+
         logStateData(interaction.guild!, defaultEmbedData)
-        
         const embeds = createEmbed(defaultEmbedData)
         botMessage.edit({ embeds })
 
         interaction.reply({ ephemeral: true, content: 'Werte wurden zurückgesetzt' })
+      }
+    }
+  },
+  {
+    command: new SlashCommandBuilder().setName('refresh').setDescription('lädt die Werte neu'),
+    callback: async (interaction: Interaction) => {
+      if (interaction instanceof ChatInputCommandInteraction) {
+        const botMessage = await getBotMessage(interaction.guild!)
+        const data = await getEmbedData(botMessage)
+
+        interaction.reply({ ephemeral: true, content: 'Werte wurden neu geladen' })
+        
+        const embeds = createEmbed(data)
+        botMessage.edit({ embeds })
       }
     }
   },
@@ -26,9 +40,6 @@ export const botCommands = [
       .addIntegerOption(option => option.setName('kurs').setDescription('[95] Kurs der gesetzt werden soll').setRequired(true)),
     callback: async (interaction: Interaction) => {
       if (interaction instanceof ChatInputCommandInteraction) {
-        console.log(interaction.options)
-
-
         const botMessage = await getBotMessage(interaction.guild!)
         const data = await getEmbedData(botMessage)
 
@@ -55,6 +66,26 @@ export const botCommands = [
           logStateData(interaction.guild!, data)
           await botMessage.edit({ embeds: createEmbed(data) })          
         }
+      }
+    }
+  },
+  {
+    command: new SlashCommandBuilder().setName('preis').setDescription('setzt den Preis pro 🌿 Blatt')
+      .addIntegerOption(option => option.setName('preis').setDescription('[460] Preis der gesetzt werden soll').setRequired(true)),
+    callback: async (interaction: Interaction) => {
+      if (interaction instanceof ChatInputCommandInteraction) {
+        const botMessage = await getBotMessage(interaction.guild!)
+        const data = await getEmbedData(botMessage)
+
+        data.payouts.price = interaction.options.getInteger('preis')!
+
+        await interaction.reply({ 
+          ephemeral: true, 
+          content: `Preis pro 🌿 Blatt wurde auf \`${interaction.options.getInteger('preis')}\` gesetzt`
+        })
+
+        logStateData(interaction.guild!, data)
+        await botMessage.edit({ embeds: createEmbed(data) })
       }
     }
   }

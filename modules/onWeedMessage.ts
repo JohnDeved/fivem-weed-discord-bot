@@ -59,14 +59,7 @@ export async function onWeedMessage(message: Message) {
   
     for (const payment of embedData.payouts.payments) {
       if (payment.user === user && type === 'leaves') {
-        // find rate for user, if not found, use 1
-        const rate = embedData.payouts.rate.find(rate => rate.user === user)?.percent || 1
-  
-        // find price for leaves
-        const price = embedData.payouts.price
-  
-        // add or subtract amount * rate * price
-        payment.amount += isAdd ? amount * rate * price : -amount * rate * price
+        payment.amount += isAdd ? amount : -amount
         payment.timestamp = Math.floor(Date.now() / 1000)
       }
     }

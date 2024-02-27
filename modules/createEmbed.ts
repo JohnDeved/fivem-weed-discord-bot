@@ -6,6 +6,7 @@ function formatMoney(amount: number) {
 }
 
 export function createEmbed(data: WeedEmbedData) {
+
   return [
     new EmbedBuilder()
       .setTitle('⚙️ Labor Maschinen')
@@ -31,7 +32,18 @@ export function createEmbed(data: WeedEmbedData) {
       .setTitle('💰 Anstehende Auszahlungen')
       .setColor(4561227)
       .setDescription(data.payouts.payments.length 
-        ? data.payouts.payments.map(payment => `👤 <@${payment.user}>: \`${formatMoney(payment.amount)}\` <t:${payment.timestamp}:R>`).join('\n')
+        ? data.payouts.payments.map(payment => {
+          // find rate for user, if not found, use 1
+          const rate = data.payouts.rate.find(rate => rate.user === payment.user)?.percent || 1
+
+          // find price for leaves
+          const price = data.payouts.price
+
+          // add or subtract amount * rate * price
+          const payout = payment.amount * rate * price
+
+          return `👤 <@${payment.user}>: \`${formatMoney(payout)} [🌿x${payment.amount}]\` <t:${payment.timestamp}:R>`
+        }).join('\n')
         : 'Keine Auszahlungen ausstehend' 
       )
       .addFields(
