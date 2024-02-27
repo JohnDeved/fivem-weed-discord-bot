@@ -19,6 +19,8 @@ interface LabMachines {
   bluntsTime: number
 }
 
+export type LabMachinesKeys = keyof LabMachines;
+
 interface Payments extends FieldParams {
   user: string
 }

@@ -1,10 +1,9 @@
-import { Client, Message } from 'discord.js'
+import { Message } from 'discord.js'
+import { createMessage } from './createMessage'
+import { getBotMessage, updateBotMessage } from './getBotMessage'
 import { getEmbedData } from './getEmbedData'
-import { createEmbed } from './createEmbed'
-import { getBotMessage } from './getBotMessage'
 import { getLogThread } from './getLogThread'
 import { logStateData } from './logStateData'
-import { createMessage } from './createMessage'
 
 export const typeDict = {
   leaves: '🌿 Blätter',
@@ -38,8 +37,7 @@ export async function onWeedMessage(message: Message) {
   const logThread = getLogThread(message.guild!)
   logThread.send(`Es wurde für <@${user}> \`${isAdd ? '+' : '-' }${amount}\` ${typeDict[type]} im **${isLab ? 'Labor Lager' : 'Frak Lager'}** ${isAdd ? 'eingelagert' : 'ausgelagert'}!`)
 
-  const botMessage = await getBotMessage(message.guild!)
-  let embedData = await getEmbedData(botMessage)
+  let embedData = await getEmbedData(message.guild!)
 
   if (isLab) {
     embedData.lab[type].amount += isAdd ? amount : -amount
@@ -66,11 +64,10 @@ export async function onWeedMessage(message: Message) {
     }
   }
 
-  logStateData(message.guild!, embedData)
-  botMessage.edit(createMessage(embedData))
+  await updateBotMessage(message.guild!, embedData)
 
   // react to original message with checkmark
-  message.react('✅')
+  await message.react('✅')
 }
 
 

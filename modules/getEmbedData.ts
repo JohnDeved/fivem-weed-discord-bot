@@ -1,10 +1,10 @@
-import { Message } from 'discord.js'
+import { Guild } from 'discord.js'
 import { defaultEmbedData } from './defaultEmbedData'
 import { getStateThread } from './getLogThread'
 import { WeedEmbedData } from './types/types'
 
-export async function getEmbedData(botMessage: Message): Promise<WeedEmbedData> {
-  const stateThread = getStateThread(botMessage.guild!)
+export async function getEmbedData(guild: Guild): Promise<WeedEmbedData> {
+  const stateThread = getStateThread(guild)
 
   // get first message
   const stateStr = await stateThread.messages.fetch().then(messages => messages.first()?.content)

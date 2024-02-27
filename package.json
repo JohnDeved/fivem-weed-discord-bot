@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "tsx index.ts",
-    "watch": "tsx watch index.ts"
+    "dev": "tsx watch index.ts",
+    "deploy": "flyctl deploy",
+    "stop": "flyctl machine stop"
   },
   "author": "",
   "license": "ISC",
