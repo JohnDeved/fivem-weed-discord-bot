@@ -15,8 +15,8 @@ interface StoreData {
 }
 
 interface LabMachines {
-  powderTime: number
-  bluntsTime: number
+  powder: FieldParams
+  blunts: FieldParams
 }
 
 export type LabMachinesKeys = keyof LabMachines;

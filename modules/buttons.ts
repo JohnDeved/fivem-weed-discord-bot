@@ -5,7 +5,7 @@ import { LabMachinesKeys, WeedEmbedData } from "./types/types"
 
 const Times = {
   PowderMachine: 1000 * 60 * 30,
-  BluntMachine: 1000 * 60 * 45
+  BluntMachine: 1000 * 60 * 45,
 }
 
 const NeededMaterials = {
@@ -14,26 +14,26 @@ const NeededMaterials = {
 }
 
 function sanityCheck(type: LabMachinesKeys, data: WeedEmbedData) {
-  if (type === 'powderTime') {
+  if (type === 'powder') {
     // check if powder machine is running
-    if (data.machines.powderTime > Math.floor(Date.now() / 1000)) {
+    if (data.machines.powder.timestamp > Math.floor(Date.now() / 1000)) {
       return 'Die Pulvermaschine läuft bereits'
     }
 
     // check if enough materials are available
-    if (data.lab.powder.amount < NeededMaterials.PowderMachine) {
+    if (data.lab.leaves.amount < NeededMaterials.PowderMachine) {
       return 'Es sind nicht genug Materialien für die Pulvermaschine vorhanden'
     }
   }
 
-  if (type === 'bluntsTime') {
+  if (type === 'blunts') {
     // check if blunt machine is running
-    if (data.machines.bluntsTime > Math.floor(Date.now() / 1000)) {
+    if (data.machines.blunts.timestamp > Math.floor(Date.now() / 1000)) {
       return 'Die Bluntsmaschine läuft bereits'
     }
 
     // check if enough materials are available
-    if (data.lab.blunts.amount < NeededMaterials.BluntMachine) {
+    if (data.lab.powder.amount < NeededMaterials.BluntMachine) {
       return 'Es sind nicht genug Materialien für die Bluntsmaschine vorhanden'
     }
   }
@@ -57,13 +57,22 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
       return
     }
     
-    setTimeout(() => {
-      interaction.followUp({ content: `Die ${emoji} Maschine ist fertig`, ephemeral: true })
+    setTimeout(async () => {
+      const data = await getEmbedData(interaction.guild!)
+      data.lab[id].amount += data.machines[id].amount
+      // if is powder, divide by 10 to get powder amount
+      if (id === 'powder') data.lab.powder.amount = Math.round(data.lab.powder.amount / 10)
+      data.machines[id].amount = 0
+      await interaction.followUp({ content: `Die ${emoji} Maschine ist fertig`, ephemeral: true })
+      await updateBotMessage(interaction.guild!, data)
     }, time)
 
-    data.machines[id] = Math.floor((Date.now() + time) / 1000)
-    console.log(data.machines[id])
+    data.machines[id].timestamp = Math.floor((Date.now() + time) / 1000)
+    data.machines[id].amount += id === 'powder' ? NeededMaterials.PowderMachine : data.lab.powder.amount
+    if (id === 'blunts') data.lab.powder.amount = 0
+    else data.lab.leaves.amount -= NeededMaterials.PowderMachine
     
+    console.log(data.machines[id])
     await updateBotMessage(interaction.guild!, data)
   }
   
@@ -75,6 +84,6 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
 }
 
 export const botButtons = [
-  createMachineButton('powderTime', '🍚', Times.PowderMachine),
-  createMachineButton('bluntsTime', '🚬', Times.BluntMachine)
+  createMachineButton('powder', '🍚', Times.PowderMachine),
+  createMachineButton('blunts', '🚬', Times.BluntMachine)
 ]
