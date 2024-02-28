@@ -17,11 +17,16 @@ export const botCommands = [
     command: new SlashCommandBuilder().setName('refresh').setDescription('lädt die Werte neu')
       .addStringOption(option => option.setName('json').setDescription('json rollback').setRequired(false)),
     callback: async (interaction: ChatInputCommandInteraction) => {
+      const json = interaction.options.getString('json')
       const data = await getEmbedData(interaction.guild!)
 
       await interaction.reply({ content: 'Werte wurden neu geladen' })
       
-      await updateBotMessage(interaction.guild!, data)
+      if (json) {
+        await updateBotMessage(interaction.guild!, JSON.parse(json))
+      } else {
+        await updateBotMessage(interaction.guild!, data)
+      }
     }
   },
   {

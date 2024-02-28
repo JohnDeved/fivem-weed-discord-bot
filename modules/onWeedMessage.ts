@@ -1,4 +1,4 @@
-import { GuildMember, Message, Role } from 'discord.js'
+import { GuildMember, Message, Role, User } from 'discord.js'
 import { updateBotMessage } from './getBotMessage'
 import { getEmbedData } from './getEmbedData'
 import { getLogThread } from './getLogThread'
@@ -9,7 +9,7 @@ export const typeDict = {
   blunts: '🚬 Blunts'
 }
 
-export function getDisplayId(user: GuildMember | Role) {
+export function getDisplayId(user: GuildMember | Role | User) {
   return user instanceof Role ? '&' + user.id : user.id
 }
 
@@ -28,12 +28,8 @@ export async function onWeedMessage(message: Message) {
 
   if (!amount) return void message.react('❌')
 
-  const firstRole = message.mentions.roles.first()?.id
-  const firstUser = message.mentions.users.first()?.id
-  const user = firstUser || firstRole
-    ? '&' + firstRole
-    : message.author.id
-
+  const userRaw = message.mentions.users.first() || message.mentions.roles.first() || message.author
+  const user = getDisplayId(userRaw)
 
   const isPowder = msg.includes("puder") || msg.includes("pulver")
   const isBlunts = !isPowder && msg.includes("blunts") || msg.includes("blunt") || msg.includes("joint")
