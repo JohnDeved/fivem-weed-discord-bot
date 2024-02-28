@@ -1,4 +1,4 @@
-import { ActivityType, ButtonInteraction, ChatInputCommandInteraction, Client, GatewayIntentBits, TextChannel } from 'discord.js'
+import { ActivityType, ButtonInteraction, ChatInputCommandInteraction, Client, GatewayIntentBits, Guild, TextChannel } from 'discord.js'
 import { config } from 'dotenv'
 import { botButtons } from './modules/buttons'
 import { botCommands } from './modules/commands'
@@ -41,9 +41,9 @@ client.once('ready', async client => {
     if (!botMessage) throw new Error('Bot message is missing')
 
     // init commands
-    channel.guild.commands.set(botCommands.map(c => c.command))
-
-    onBotInit(botMessage)
+    await channel.guild.commands.set(botCommands.map(c => c.command))
+    
+    onBotInit(channel.guild)
   }
 })
 

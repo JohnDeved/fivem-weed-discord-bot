@@ -20,7 +20,8 @@ export function createEmbed(data: WeedEmbedData) {
         { name: '🌿 Blätter', value: `\`${data.lab.leaves.amount}\` <t:${data.lab.leaves.timestamp}:R>`, inline: true },
         { name: '🍚 Puder', value: `\`${data.lab.powder.amount}\` <t:${data.lab.powder.timestamp}:R>`, inline: true },
         { name: '🚬 Blunts', value: `\`${data.lab.blunts.amount}\` <t:${data.lab.blunts.timestamp}:R>`, inline: true }
-      ),
+      )
+      .setFooter({ text: 'Puder und Blunts anzahl kann abweichen' }),
     new EmbedBuilder()
       .setTitle('📦 Lager Inhalt')
       .addFields(

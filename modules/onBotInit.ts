@@ -1,5 +1,10 @@
-import { Message } from "discord.js"
+import { Guild, Message } from "discord.js"
+import { checkReminder } from "./buttons"
 
-export async function onBotInit (botMessage: Message) {
-  console.log(botMessage.author.username, 'ready')
+export async function onBotInit (guild: Guild) {
+  console.log(guild.client.user, 'ready')
+
+  setInterval(() => {
+    checkReminder(guild)
+  }, 5000)
 }
