@@ -7,7 +7,7 @@ export async function getEmbedData(guild: Guild): Promise<WeedEmbedData> {
   const stateThread = getStateThread(guild)
 
   // get first message
-  const stateStr = await stateThread.messages.fetch().then(messages => messages.first()?.content)
+  const stateStr = await stateThread.messages.fetch({ limit: 1 }).then(messages => messages.first()?.content)
   let state: WeedEmbedData
 
   try {
@@ -16,6 +16,6 @@ export async function getEmbedData(guild: Guild): Promise<WeedEmbedData> {
     state = defaultEmbedData
   }
 
-  console.log(state)
+  // console.log(state)
   return state
 }

@@ -39,53 +39,37 @@ function sanityCheck(type: LabMachinesKeys, data: WeedEmbedData) {
   }
 }
 
-type Reminder = {
-  [key in LabMachinesKeys]: {
-    user: User[]
-    doRemind: boolean
-  }
-}
-
-const reminders: Reminder = {
-  powder: {
-    user: [],
-    doRemind: false
-  },
-  blunts: {
-    user: [],
-    doRemind: false
-  }
-}
-
-export async function checkReminder(guild: Guild) {
-  if (!reminders.blunts.doRemind && !reminders.powder.doRemind) return
+export async function checkMachine(guild: Guild) {
+  if (guild.name.includes('undefined')) return
   const data = await getEmbedData(guild)
 
-  if (reminders.powder.doRemind) {
-    if (data.machines.powder.timestamp < Math.floor(Date.now() / 1000)) {
-      sendReminder(guild, 'powder', data)
+  const timeNow = Math.floor(Date.now() / 1000)
+
+  if (data.machines.powder.timestamp < timeNow) {
+    if (data.machines.powder.amount > 0) {
+      data.lab.powder.amount += Math.round(data.machines.powder.amount / 10)
+      data.machines.powder.amount = 0
+      await updateBotMessage(guild, data)
     }
+
   }
 
-  if (reminders.blunts.doRemind) {
-    if (data.machines.blunts.timestamp < Math.floor(Date.now() / 1000)) {
-      sendReminder(guild, 'blunts', data)
+  if (data.machines.blunts.timestamp < timeNow) {
+    if (data.machines.blunts.amount > 0) {
+      data.lab.blunts.amount += data.machines.blunts.amount
+      data.machines.blunts.amount = 0
+      await updateBotMessage(guild, data)
     }
   }
 }
 
-export async function sendReminder(guild: Guild, type: LabMachinesKeys, data: WeedEmbedData) {
+export async function sendReminder(user: User, guild: Guild, type: LabMachinesKeys, data: WeedEmbedData) {
   data.lab[type].amount += data.machines[type].amount
   // if is powder, divide by 10 to get powder amount
   if (type === 'powder') data.lab.powder.amount = Math.round(data.lab.powder.amount / 10)
   data.machines[type].amount = 0
 
-  for (const user of reminders[type].user) {
-    await user.send(`Die ${type === 'blunts' ? '🚬 Blunt' : '🍚 Puder'} Maschine ist fertig`)
-  }
-
-  reminders[type].user = []
-  reminders[type].doRemind = false
+  await user.send(`Die ${type === 'blunts' ? '🚬 Blunt' : '🍚 Puder'} Maschine ist fertig`)
 
   await updateBotMessage(guild, data)
 }
@@ -108,8 +92,9 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
       return
     }
 
-    reminders[id].user.push(interaction.user)
-    reminders[id].doRemind = true
+    setTimeout(() => {
+      sendReminder(interaction.user, interaction.guild!, id, data)
+    }, time)
 
     data.machines[id].timestamp = Math.floor((Date.now() + time) / 1000)
     data.machines[id].amount += id === 'powder' ? NeededMaterials.PowderMachine : data.lab.powder.amount
