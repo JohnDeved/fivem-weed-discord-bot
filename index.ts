@@ -18,13 +18,13 @@ const client = new Client({
 })
 
 client.once('ready', async client => {
-  client.user?.setActivity('PornHub', {
+  client.user?.setActivity('ronin = unter eier', {
     type: ActivityType.Watching
   })
 
   // find all channels named weed-labor-bot
   const channels = client.channels.cache.filter((channel): channel is TextChannel => 
-    channel instanceof TextChannel && channel.name === 'weed-labor-bot'
+    channel instanceof TextChannel && channel.name.includes('weed-labor-bot')
   )
 
   // find message by bot
@@ -49,9 +49,8 @@ client.once('ready', async client => {
 })
 
 client.on('messageCreate', message => {
-  // if channel name is weed-labor
   if (message.channel instanceof TextChannel) {
-    if (message.channel.name === 'weed-labor') {
+    if (message.channel.name.includes('weed-labor-abgaben')) {
       onWeedMessage(message)
     }
   }

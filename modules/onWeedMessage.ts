@@ -1,4 +1,4 @@
-import { Message } from 'discord.js'
+import { GuildMember, Message, Role } from 'discord.js'
 import { updateBotMessage } from './getBotMessage'
 import { getEmbedData } from './getEmbedData'
 import { getLogThread } from './getLogThread'
@@ -9,7 +9,14 @@ export const typeDict = {
   blunts: '🚬 Blunts'
 }
 
+export function getDisplayId(user: GuildMember | Role) {
+  return user instanceof Role ? '&' + user.id : user.id
+}
+
 export async function onWeedMessage(message: Message) {
+  // if by bot, ignore
+  if (message.author.bot) return
+
   const msg = message.content.toLowerCase()
 
   const isAdd = msg.includes("+") || !msg.includes("-")
@@ -18,6 +25,8 @@ export async function onWeedMessage(message: Message) {
   const isLab = !isStore
 
   const amount = parseInt(msg.replace(/<.*?>|\D/g, ''))
+
+  if (!amount) return void message.react('❌')
 
   const firstRole = message.mentions.roles.first()?.id
   const firstUser = message.mentions.users.first()?.id
@@ -40,11 +49,17 @@ export async function onWeedMessage(message: Message) {
   if (isLab) {
     embedData.lab[type].amount += isAdd ? amount : -amount
     embedData.lab[type].timestamp = Math.floor(Date.now() / 1000)
+
+    // if is less than 0, set to 0
+    if (embedData.lab[type].amount < 0) embedData.lab[type].amount = 0
   }
 
   if (isStore && type !== 'powder') {
     embedData.store[type].amount += isAdd ? amount : -amount
     embedData.store[type].timestamp = Math.floor(Date.now() / 1000)
+
+    // if is less than 0, set to 0
+    if (embedData.store[type].amount < 0) embedData.store[type].amount = 0
   }
 
   if (type === 'leaves') {
@@ -57,6 +72,12 @@ export async function onWeedMessage(message: Message) {
     
     payment.amount += isAdd ? amount : -amount;
     payment.timestamp = Math.floor(Date.now() / 1000);
+
+    // if is 0 or less, remove payment
+    if (payment.amount <= 0) {
+      const index = embedData.payouts.payments.findIndex(p => p.user === user)
+      if (index > -1) embedData.payouts.payments.splice(index, 1)
+    }
   }
 
   await updateBotMessage(message.guild!, embedData)

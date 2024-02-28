@@ -5,7 +5,7 @@ import { logStateData } from './logStateData';
 
 export async function getBotMessage(guild: Guild) {
   // get channel named weed-labor-bot
-  const channel = guild?.channels.cache.find(channel => channel.name === 'weed-labor-bot');
+  const channel = guild?.channels.cache.find(channel => channel.name.includes('weed-labor-bot'));
 
   if (channel instanceof TextChannel) {
     // find all messages by bot
