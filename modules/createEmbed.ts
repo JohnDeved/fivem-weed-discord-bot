@@ -10,8 +10,8 @@ export function createEmbed(data: WeedEmbedData) {
     new EmbedBuilder()
       .setTitle('⚙️ Labor Maschinen')
       .addFields(
-        { name: '🍚 Puder Maschine', value: `\`[🌿x${data.machines.powder.amount}]\` ferting <t:${data.machines.powder.timestamp}:R>`, inline: true },
-        { name: '🚬 Blunt Maschine', value: `\`[🍚x${data.machines.blunts.amount}]\` ferting <t:${data.machines.blunts.timestamp}:R>`, inline: true }
+        { name: '🍚 Puder Maschine', value: `\`[🌿x${data.machines.powder.amount}]\` fertig <t:${data.machines.powder.timestamp}:R>`, inline: true },
+        { name: '🚬 Blunt Maschine', value: `\`[🍚x${data.machines.blunts.amount}]\` fertig <t:${data.machines.blunts.timestamp}:R>`, inline: true }
       ),
     new EmbedBuilder()
       .setTitle('📦 Labor Inhalt')
