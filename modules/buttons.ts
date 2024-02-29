@@ -92,8 +92,9 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
       return
     }
 
-    setTimeout(() => {
-      sendReminder(interaction.user, interaction.guild!, id, data)
+    setTimeout(async () => {
+      const newData = await getEmbedData(interaction.guild!)
+      sendReminder(interaction.user, interaction.guild!, id, newData)
     }, time)
 
     data.machines[id].timestamp = Math.floor((Date.now() + time) / 1000)
