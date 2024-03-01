@@ -20,7 +20,7 @@ export const botCommands = [
       const json = interaction.options.getString('json')
       const data = await getEmbedData(interaction.guild!)
 
-      await interaction.reply({ content: 'Werte wurden neu geladen' })
+      await interaction.reply({ content: 'Werte wurden neu geladen', ephemeral: true })
       
       if (json) {
         await updateBotMessage(interaction.guild!, JSON.parse(json))

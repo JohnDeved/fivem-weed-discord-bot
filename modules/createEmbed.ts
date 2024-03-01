@@ -27,7 +27,8 @@ export function createEmbed(data: WeedEmbedData) {
       .addFields(
         { name: '🌿 Blätter', value: `\`${data.store.leaves.amount}\` <t:${data.store.leaves.timestamp}:R>`, inline: true },
         { name: '🚬 Blunts', value: `\`${data.store.blunts.amount}\` <t:${data.store.blunts.timestamp}:R>`, inline: true }
-      ),
+      )
+      .setFooter({ text: `Es befinden sich Blunts im Wert von ca. ${formatMoney(data.store.blunts.amount * data.payouts.price * 100)} im Lager` }),
     new EmbedBuilder()
       .setTitle('💰 Anstehende Auszahlungen')
       .setColor(4561227)
@@ -51,9 +52,20 @@ export function createEmbed(data: WeedEmbedData) {
       )
       .addFields(
         data.payouts.rate.map(rate => {
-          return { name: `📈 Kurs`, value: `<@${rate.user}> ${rate.percent * 100}%`, inline: true }
+          return { 
+            name: `📈 Kurs`, 
+            value: `<@${rate.user}> ${rate.percent * 100}%\n${formatMoney(rate.percent * data.payouts.price)} pro 🌿`, 
+            inline: true 
+          }
         })
       )
-    .setFooter({ text: 'Alle Preise sind in Schwarzgeld gerechnet' })
+    .setFooter({ 
+      text: `Alle Preise sind in Schwarzgeld gerechnet\nGesamtbetrag: ${formatMoney(data.payouts.payments.reduce((sum, payment) => {
+        const rate = data.payouts.rate.find(rate => rate.user === payment.user)?.percent || 1
+        const price = data.payouts.price
+        const payout = payment.amount * rate * price
+        return sum + payout
+      }, 0))}`
+    })
   ]
 }
