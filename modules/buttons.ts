@@ -47,7 +47,7 @@ export async function checkMachine(guild: Guild) {
 
   if (data.machines.powder.timestamp < timeNow) {
     if (data.machines.powder.amount > 0) {
-      data.lab.powder.amount += Math.round(data.machines.powder.amount / 10)
+      data.lab.powder.amount += (NeededMaterials.PowderMachine / 10)
       data.machines.powder.amount = 0
       await updateBotMessage(guild, data)
     }
