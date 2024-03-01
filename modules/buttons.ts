@@ -63,15 +63,8 @@ export async function checkMachine(guild: Guild) {
   }
 }
 
-export async function sendReminder(user: User, guild: Guild, type: LabMachinesKeys, data: WeedEmbedData) {
-  data.lab[type].amount += data.machines[type].amount
-  // if is powder, divide by 10 to get powder amount
-  if (type === 'powder') data.lab.powder.amount = Math.round(data.lab.powder.amount / 10)
-  data.machines[type].amount = 0
-
+export async function sendReminder(user: User, type: LabMachinesKeys) {
   await user.send(`Die ${type === 'blunts' ? '🚬 Blunt' : '🍚 Puder'} Maschine ist fertig`)
-
-  await updateBotMessage(guild, data)
 }
 
 function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
@@ -93,8 +86,7 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
     }
 
     setTimeout(async () => {
-      const newData = await getEmbedData(interaction.guild!)
-      sendReminder(interaction.user, interaction.guild!, id, newData)
+      sendReminder(interaction.user, id)
     }, time)
 
     data.machines[id].timestamp = Math.floor((Date.now() + time) / 1000)
