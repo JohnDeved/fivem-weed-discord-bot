@@ -2,6 +2,7 @@ import { Guild, TextChannel } from 'discord.js';
 import { WeedEmbedData } from './types/types';
 import { createMessage } from './createMessage';
 import { logStateData } from './logStateData';
+import { setState } from './memoryState';
 
 export async function getBotMessage(guild: Guild) {
   // get channel named weed-labor-bot
@@ -27,6 +28,7 @@ export async function getBotMessage(guild: Guild) {
 }
 
 export async function updateBotMessage(guild: Guild, data: WeedEmbedData) {
+  setState(data)
   await logStateData(guild, data)
   const botMessage = await getBotMessage(guild)
   await botMessage.edit(createMessage(data))
