@@ -5,7 +5,7 @@ import { WeedEmbedData } from './types/types'
 import { getState } from './memoryState'
 
 export async function getEmbedData(guild: Guild): Promise<WeedEmbedData> {
-  let state = getState()
+  let state = getState(guild)
 
   if (!state) {
     const stateThread = getStateThread(guild)

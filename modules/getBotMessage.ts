@@ -28,7 +28,7 @@ export async function getBotMessage(guild: Guild) {
 }
 
 export async function updateBotMessage(guild: Guild, data: WeedEmbedData) {
-  setState(data)
+  setState(guild, data)
   await logStateData(guild, data)
   const botMessage = await getBotMessage(guild)
   await botMessage.edit(createMessage(data))

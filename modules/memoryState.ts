@@ -1,14 +1,17 @@
+import { Guild } from "discord.js"
 import { WeedEmbedData } from "./types/types"
 
-let state: WeedEmbedData | null = null
+let state: {
+  [guildId: string]: WeedEmbedData
+} = {}
 
-export function setState (newState: WeedEmbedData) {
-  if (state)
-    return void Object.assign(state, newState)
+export function setState (guild: Guild, newState: WeedEmbedData) {
+  if (state[guild.id])
+    return void Object.assign(state[guild.id], newState)
 
-  state = newState
+  state[guild.id] = newState
 }
 
-export function getState () {
-  return state
+export function getState (guild: Guild) {
+  return state[guild.id]
 }
