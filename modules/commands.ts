@@ -8,25 +8,31 @@ export const botCommands = [
   {
     command: new SlashCommandBuilder().setName('reset').setDescription('setzt alle Werte zurück'),
     callback: async (interaction: ChatInputCommandInteraction) => {
-      await interaction.reply({ content: 'Werte wurden zurückgesetzt' })
+      await interaction.deferReply({ ephemeral: true })
       
       await updateBotMessage(interaction.guild!, defaultEmbedData)
+      await interaction.followUp({ content: 'Werte wurden zurückgesetzt' })
     }
   },
   {
     command: new SlashCommandBuilder().setName('refresh').setDescription('lädt die Werte neu')
       .addStringOption(option => option.setName('json').setDescription('json rollback').setRequired(false)),
     callback: async (interaction: ChatInputCommandInteraction) => {
+      await interaction.deferReply({ ephemeral: true })
       const json = interaction.options.getString('json')
       const data = await getEmbedData(interaction.guild!)
-
-      await interaction.reply({ content: 'Werte wurden neu geladen', ephemeral: true })
       
       if (json) {
-        await updateBotMessage(interaction.guild!, JSON.parse(json))
+        try {
+          await updateBotMessage(interaction.guild!, JSON.parse(json))
+        } catch (e) {
+          await interaction.followUp({ content: 'Fehler beim Parsen des JSON', ephemeral: true })
+        }
       } else {
         await updateBotMessage(interaction.guild!, data)
       }
+
+      await interaction.followUp({ content: 'Werte wurden neu geladen', ephemeral: true })
     }
   },
   {
@@ -34,16 +40,13 @@ export const botCommands = [
       .addMentionableOption(option => option.setName('member').setDescription('[@Kavkaz] Member/Fraktion für den der Kurs gesetzt werden soll').setRequired(true))
       .addIntegerOption(option => option.setName('kurs').setDescription('[95] Kurs der gesetzt werden soll').setRequired(true)),
     callback: async (interaction: ChatInputCommandInteraction) => {
+      await interaction.deferReply({ ephemeral: true })
       // if data.payouts.payments does not contain value for member, add it
       const member = interaction.options.getMentionable('member')!
       const kurs = interaction.options.getInteger('kurs')!
 
       if (member instanceof GuildMember || member instanceof Role) {
         const displayId = getDisplayId(member)
-
-        await interaction.reply({
-          content: `Kurs für ${member} wurde auf \`${interaction.options.getInteger('kurs')}%\` gesetzt` 
-        })
 
         const data = await getEmbedData(interaction.guild!)
         // find and remove old value
@@ -53,7 +56,11 @@ export const botCommands = [
         // add new value
         data.payouts.rate.push({ user: displayId, percent: kurs / 100 })
         
-        await updateBotMessage(interaction.guild!, data)      
+        await updateBotMessage(interaction.guild!, data)
+
+        await interaction.followUp({
+          content: `Kurs für ${member} wurde auf \`${interaction.options.getInteger('kurs')}%\` gesetzt` 
+        })
       }
     }
   },
@@ -61,14 +68,15 @@ export const botCommands = [
     command: new SlashCommandBuilder().setName('preis').setDescription('setzt den Preis pro 🌿 Blatt')
       .addIntegerOption(option => option.setName('preis').setDescription('[460] Preis der gesetzt werden soll').setRequired(true)),
     callback: async (interaction: ChatInputCommandInteraction) => {
+      await interaction.deferReply({ ephemeral: true })
       
-      await interaction.reply({
-        content: `Preis pro 🌿 Blatt wurde auf \`${interaction.options.getInteger('preis')}\` gesetzt`
-      })
-
       const data = await getEmbedData(interaction.guild!)
       data.payouts.price = interaction.options.getInteger('preis')!
       await updateBotMessage(interaction.guild!, data)
+
+      await interaction.followUp({
+        content: `Preis pro 🌿 Blatt wurde auf \`${interaction.options.getInteger('preis')}\` gesetzt`
+      })
     }
   },
   {
@@ -76,6 +84,7 @@ export const botCommands = [
       .addMentionableOption(option => option.setName('member').setDescription('[@Kavkaz] Member/Fraktion für den die Auszahlung gesetzt werden soll').setRequired(true))
       .addIntegerOption(option => option.setName('payout').setDescription('[1000] Auszahlung gegeben wurde, leer = alles').setRequired(false)),
     callback: async (interaction: ChatInputCommandInteraction) => {
+      await interaction.deferReply({ ephemeral: true })
       const member = interaction.options.getMentionable('member')!
       const payout = interaction.options.getInteger('payout')
 
@@ -108,7 +117,7 @@ export const botCommands = [
           if (index > -1) data.payouts.payments.splice(index, 1)
         }
 
-        await interaction.reply({
+        await interaction.followUp({
           content: `Auszahlung für ${member} wurde auf \`${remainingPayout.toLocaleString('de', { style: "currency", currency: "EUR", maximumFractionDigits: 0 })}\` gesetzt`
         })
 

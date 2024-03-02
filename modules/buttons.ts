@@ -76,7 +76,7 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
     .setStyle(ButtonStyle.Secondary)
 
   const callback = async (interaction: ButtonInteraction) => {
-    await interaction.reply({ content: `Ich werde dich benachrichtigen, wenn die ${emoji} Maschine fertig ist`, ephemeral: true })
+    await interaction.deferReply({ ephemeral: true })
 
     // update embeddata
     const data = await getEmbedData(interaction.guild!)
@@ -98,6 +98,7 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
     const logThread = getLogThread(interaction.guild!)
     await logThread.send(`Die ${id === 'blunts' ? '🚬 Blunt' : '🍚 Puder'} Maschine wurde von <@${interaction.user.id}> gestartet`)
     await updateBotMessage(interaction.guild!, data)
+    await interaction.followUp({ content: `Ich werde dich benachrichtigen, wenn die ${emoji} Maschine fertig ist`, ephemeral: true })
   }
   
   return {
