@@ -3,6 +3,7 @@ import { defaultEmbedData } from "./defaultEmbedData";
 import { updateBotMessage } from "./getBotMessage";
 import { getEmbedData } from "./getEmbedData";
 import { getDisplayId } from "./onWeedMessage";
+import { formatMoney } from "./createEmbed";
 
 export const botCommands = [
   {
@@ -40,7 +41,7 @@ export const botCommands = [
       .addMentionableOption(option => option.setName('member').setDescription('[@Kavkaz] Member/Fraktion für den der Kurs gesetzt werden soll').setRequired(true))
       .addIntegerOption(option => option.setName('kurs').setDescription('[95] Kurs der gesetzt werden soll').setRequired(true)),
     callback: async (interaction: ChatInputCommandInteraction) => {
-      await interaction.deferReply({ ephemeral: true })
+      await interaction.deferReply()
       // if data.payouts.payments does not contain value for member, add it
       const member = interaction.options.getMentionable('member')!
       const kurs = interaction.options.getInteger('kurs')!
@@ -68,7 +69,7 @@ export const botCommands = [
     command: new SlashCommandBuilder().setName('preis').setDescription('setzt den Preis pro 🌿 Blatt')
       .addIntegerOption(option => option.setName('preis').setDescription('[460] Preis der gesetzt werden soll').setRequired(true)),
     callback: async (interaction: ChatInputCommandInteraction) => {
-      await interaction.deferReply({ ephemeral: true })
+      await interaction.deferReply()
       
       const data = await getEmbedData(interaction.guild!)
       data.payouts.price = interaction.options.getInteger('preis')!
@@ -84,7 +85,7 @@ export const botCommands = [
       .addMentionableOption(option => option.setName('member').setDescription('[@Kavkaz] Member/Fraktion für den die Auszahlung gesetzt werden soll').setRequired(true))
       .addIntegerOption(option => option.setName('payout').setDescription('[1000] Auszahlung gegeben wurde, leer = alles').setRequired(false)),
     callback: async (interaction: ChatInputCommandInteraction) => {
-      await interaction.deferReply({ ephemeral: true })
+      await interaction.deferReply()
       const member = interaction.options.getMentionable('member')!
       const payout = interaction.options.getInteger('payout')
 
@@ -94,7 +95,7 @@ export const botCommands = [
 
         const payment = data.payouts.payments.find(p => p.user === displayId)
         if (!payment) {
-          return void await interaction.reply({
+          return void await interaction.followUp({
             content: `Keine Auszahlung für ${member} gefunden`
           })
         }
@@ -118,7 +119,7 @@ export const botCommands = [
         }
 
         await interaction.followUp({
-          content: `Auszahlung für ${member} wurde auf \`${remainingPayout.toLocaleString('de', { style: "currency", currency: "EUR", maximumFractionDigits: 0 })}\` gesetzt`
+          content: `Auszahlung für ${member} wurde auf \`${formatMoney(remainingPayout)}\` gesetzt`
         })
 
         await updateBotMessage(interaction.guild!, data)

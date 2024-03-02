@@ -1,7 +1,7 @@
 import { EmbedBuilder } from 'discord.js'
 import { WeedEmbedData } from './types/types'
 
-function formatMoney(amount: number) {
+export function formatMoney(amount: number) {
   return amount.toLocaleString('de', { style: "currency", currency: "EUR", maximumFractionDigits: 0 })
 }
 
