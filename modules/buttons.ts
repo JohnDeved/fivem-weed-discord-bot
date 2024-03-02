@@ -2,6 +2,7 @@ import { ButtonBuilder, ButtonInteraction, ButtonStyle, Guild, User } from "disc
 import { updateBotMessage } from "./getBotMessage"
 import { getEmbedData } from "./getEmbedData"
 import { LabMachinesKeys, WeedEmbedData } from "./types/types"
+import { getLogThread } from "./getLogThread"
 
 const Times = {
   PowderMachine: 1000 * 60 * 30,
@@ -94,7 +95,8 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
     if (id === 'blunts') data.lab.powder.amount = 0
     else data.lab.leaves.amount -= NeededMaterials.PowderMachine
     
-    console.log(data.machines[id])
+    const logThread = getLogThread(interaction.guild!)
+    await logThread.send(`Die ${id === 'blunts' ? '🚬 Blunt' : '🍚 Puder'} Maschine wurde von <@${interaction.user.id}> gestartet`)
     await updateBotMessage(interaction.guild!, data)
   }
   
