@@ -30,7 +30,7 @@ export function createEmbed(data: WeedEmbedData) {
       { name: '🌿 Blätter', value: `\`${data.store.leaves.amount}\` <t:${data.store.leaves.timestamp}:R>`, inline: true },
       { name: '🚬 Blunts', value: `\`${data.store.blunts.amount}\` <t:${data.store.blunts.timestamp}:R>`, inline: true }
     )
-    .setFooter({ text: `Es befinden sich Blunts im Wert von ca. ${formatMoney(data.store.blunts.amount * data.payouts.price * 100)} im Lager` })
+    .setFooter({ text: `Es befinden sich Blunts im Wert von ca. ${formatMoney(data.store.blunts.amount * data.payouts.price * 10)} im Lager` })
 
   const payoutsEmbed = new EmbedBuilder()
     .setTitle('💰 Anstehende Auszahlungen')
@@ -46,7 +46,9 @@ export function createEmbed(data: WeedEmbedData) {
         // add or subtract amount * rate * price
         const payout = payment.amount * rate * price
 
-        return `<@${payment.user}>: \`${formatMoney(payout)} [🌿x${payment.amount}]\` <t:${payment.timestamp}:R>`
+        const blunts = Math.floor(payout / (price * 10))
+
+        return `<@${payment.user}>: \`${formatMoney(payout)} / 🚬x${blunts}\` \`[🌿x${payment.amount}]\` <t:${payment.timestamp}:R>`
       }).join('\n')
       : 'Keine Auszahlungen ausstehend' 
     )
