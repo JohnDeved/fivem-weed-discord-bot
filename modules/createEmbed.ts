@@ -1,5 +1,6 @@
 import { EmbedBuilder } from 'discord.js'
 import { WeedEmbedData } from './types/types'
+import { NeededMaterials, Times } from './buttons'
 
 export function formatMoney(amount: number) {
   return amount.toLocaleString('de', { style: "currency", currency: "EUR", maximumFractionDigits: 0 })
@@ -27,6 +28,13 @@ function getPayoutTotal(data: WeedEmbedData) {
   }, 0)
 }
 
+function getTotalProcessingTimeHours(data: WeedEmbedData) {
+  const powderRuns = Math.ceil(data.lab.leaves.amount / NeededMaterials.PowderMachine)
+  const powderTime = powderRuns * Times.PowderMachine
+  const bluntTime = data.lab.powder.amount > 0 ? Times.BluntMachine : 0
+  return (powderTime + bluntTime) / 1000 / 60 / 60
+}
+
 export function createEmbed(data: WeedEmbedData) {
   const labMachinesEmbed = new EmbedBuilder()
     .setTitle('⚙️ Labor Maschinen')
@@ -34,6 +42,7 @@ export function createEmbed(data: WeedEmbedData) {
       { name: '🍚 Puder Maschine', value: `\`[🌿x${data.machines.powder.amount}]\` fertig <t:${data.machines.powder.timestamp}:R>`, inline: true },
       { name: '🚬 Blunt Maschine', value: `\`[🍚x${data.machines.blunts.amount}]\` fertig <t:${data.machines.blunts.timestamp}:R>`, inline: true }
     )
+    .setFooter({ text: `Verarbeitungszeit für alle gelagerten Materialien ca. ${getTotalProcessingTimeHours(data).toFixed(2)} Stunden` })
 
   const labContentEmbed = new EmbedBuilder()
     .setTitle('📦 Labor Inhalt')
