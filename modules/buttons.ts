@@ -1,15 +1,15 @@
 import { ButtonBuilder, ButtonInteraction, ButtonStyle, Guild, User } from "discord.js"
 import { updateBotMessage } from "./getBotMessage"
 import { getEmbedData } from "./getEmbedData"
+import { logMessage } from "./logMessage"
 import { LabMachinesKeys, WeedEmbedData } from "./types/types"
-import { getLogThread } from "./getLogThread"
 
-const Times = {
+export const Times = {
   PowderMachine: 1000 * 60 * 30,
   BluntMachine: 1000 * 60 * 45,
 }
 
-const NeededMaterials = {
+export const NeededMaterials = {
   PowderMachine: 1000,
   BluntMachine: 1,
 }
@@ -95,8 +95,7 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
     if (id === 'blunts') data.lab.powder.amount = 0
     else data.lab.leaves.amount -= NeededMaterials.PowderMachine
     
-    const logThread = getLogThread(interaction.guild!)
-    await logThread.send(`Die ${id === 'blunts' ? '🚬 Blunt' : '🍚 Puder'} Maschine wurde von <@${interaction.user.id}> gestartet`)
+    await logMessage(interaction.guild!, `Die ${id === 'blunts' ? '🚬 Blunt' : '🍚 Puder'} Maschine wurde von <@${interaction.user.id}> gestartet`)
     await updateBotMessage(interaction.guild!, data)
     await interaction.followUp({ content: `Ich werde dich benachrichtigen, wenn die ${emoji} Maschine fertig ist`, ephemeral: true })
   }

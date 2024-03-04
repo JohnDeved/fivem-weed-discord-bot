@@ -1,7 +1,7 @@
 import { GuildMember, Message, Role, User } from 'discord.js'
 import { updateBotMessage } from './getBotMessage'
 import { getEmbedData } from './getEmbedData'
-import { getLogThread } from './getLogThread'
+import { logMessage } from './logMessage'
 
 export const typeDict = {
   leaves: '🌿 Blätter',
@@ -37,8 +37,7 @@ export async function onWeedMessage(message: Message) {
 
   console.log({ store: isAdd, labor: isLab, lager: isStore, amount, user }, msg)
 
-  const logThread = getLogThread(message.guild!)
-  logThread.send(`Es wurde für <@${user}> \`${isAdd ? '+' : '-' }${amount}\` ${typeDict[type]} im **${isLab ? 'Labor Lager' : 'Frak Lager'}** ${isAdd ? 'eingelagert' : 'ausgelagert'}!`)
+  await logMessage(message.guild!, `Es wurde für <@${user}> \`${isAdd ? '+' : '-' }${amount}\` ${typeDict[type]} im **${isLab ? 'Labor Lager' : 'Frak Lager'}** ${isAdd ? 'eingelagert' : 'ausgelagert'}!`)
 
   let embedData = await getEmbedData(message.guild!)
 
