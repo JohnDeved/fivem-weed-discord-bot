@@ -18,7 +18,7 @@ const client = new Client({
 })
 
 client.once('ready', async client => {
-  client.user?.setActivity('ronin = unter eier', {
+  client.user?.setActivity('zoey + john = <3', {
     type: ActivityType.Watching
   })
 

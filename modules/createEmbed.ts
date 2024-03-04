@@ -5,6 +5,27 @@ export function formatMoney(amount: number) {
   return amount.toLocaleString('de', { style: "currency", currency: "EUR", maximumFractionDigits: 0 })
 }
 
+function getLabContentPrice(data: WeedEmbedData) {
+  const blunts = data.lab.blunts.amount * data.payouts.price * 10
+  const powder = (data.lab.powder.amount + data.machines.blunts.amount) * data.payouts.price * 10
+  const leaves = (data.lab.leaves.amount + data.machines.powder.amount) * data.payouts.price
+  return blunts + powder + leaves
+}
+
+function getStoreContentPrice(data: WeedEmbedData) {
+  const blunts = data.store.blunts.amount * data.payouts.price * 10
+  const leaves = data.store.leaves.amount * data.payouts.price
+  return blunts + leaves
+}
+
+function getPayoutTotal(data: WeedEmbedData) {
+  return data.payouts.payments.reduce((sum, payment) => {
+    const rate = data.payouts.rate.find(rate => rate.user === payment.user)?.percent || 1
+    const price = data.payouts.price
+    const payout = payment.amount * rate * price
+    return sum + payout
+  }, 0)
+}
 
 export function createEmbed(data: WeedEmbedData) {
   const labMachinesEmbed = new EmbedBuilder()
@@ -22,7 +43,9 @@ export function createEmbed(data: WeedEmbedData) {
       { name: '🍚 Puder', value: `\`${data.lab.powder.amount}\` <t:${data.lab.powder.timestamp}:R>`, inline: true },
       { name: '🚬 Blunts', value: `\`${data.lab.blunts.amount}\` <t:${data.lab.blunts.timestamp}:R>`, inline: true }
     )
-    .setFooter({ text: 'Puder und Blunts anzahl kann abweichen' })
+    .setFooter({ 
+      text: `Puder und Blunts anzahl kann abweichen\nEs befinden sich Materialen im Wert von ca. ${formatMoney(getLabContentPrice(data))} im Labor`
+    })
 
   const storeContentEmbed = new EmbedBuilder()
     .setTitle('📦 Lager Inhalt')
@@ -30,7 +53,9 @@ export function createEmbed(data: WeedEmbedData) {
       { name: '🌿 Blätter', value: `\`${data.store.leaves.amount}\` <t:${data.store.leaves.timestamp}:R>`, inline: true },
       { name: '🚬 Blunts', value: `\`${data.store.blunts.amount}\` <t:${data.store.blunts.timestamp}:R>`, inline: true }
     )
-    .setFooter({ text: `Es befinden sich Blunts im Wert von ca. ${formatMoney(data.store.blunts.amount * data.payouts.price * 10)} im Lager` })
+    .setFooter({ 
+      text: `Es befinden sich Materialen im Wert von ca. ${formatMoney(getStoreContentPrice(data))} im Lager` 
+    })
 
   const payoutsEmbed = new EmbedBuilder()
     .setTitle('💰 Anstehende Auszahlungen')
@@ -65,12 +90,7 @@ export function createEmbed(data: WeedEmbedData) {
       })
     )
   .setFooter({
-    text: `Alle Preise sind in Schwarzgeld gerechnet\nGesamtbetrag: ${formatMoney(data.payouts.payments.reduce((sum, payment) => {
-      const rate = data.payouts.rate.find(rate => rate.user === payment.user)?.percent || 1
-      const price = data.payouts.price
-      const payout = payment.amount * rate * price
-      return sum + payout
-    }, 0))}`
+    text: `Alle Preise sind in Schwarzgeld gerechnet\nAuszahlung Gesamtbetrag: ${formatMoney(getPayoutTotal(data))}\nGesamt Bestandswert: ${formatMoney(getLabContentPrice(data) + getStoreContentPrice(data))}`
   })
 
   return [
