@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, GuildMember, Role, SlashCommandBuilder } from "discord.js";
 import { defaultEmbedData } from "./defaultEmbedData";
-import { updateBotMessage } from "./getBotMessage";
+import { updateWeedBotMessage } from "./getWeedBotMessage";
 import { getEmbedData } from "./getEmbedData";
 import { getDisplayId } from "./onWeedMessage";
 import { formatMoney } from "./createEmbed";
@@ -11,7 +11,7 @@ export const botCommands = [
     callback: async (interaction: ChatInputCommandInteraction) => {
       await interaction.deferReply({ ephemeral: true })
       
-      await updateBotMessage(interaction.guild!, defaultEmbedData)
+      await updateWeedBotMessage(interaction.guild!, defaultEmbedData)
       await interaction.followUp({ content: 'Werte wurden zurückgesetzt' })
     }
   },
@@ -25,12 +25,12 @@ export const botCommands = [
       
       if (json) {
         try {
-          await updateBotMessage(interaction.guild!, JSON.parse(json))
+          await updateWeedBotMessage(interaction.guild!, JSON.parse(json))
         } catch (e) {
           await interaction.followUp({ content: 'Fehler beim Parsen des JSON', ephemeral: true })
         }
       } else {
-        await updateBotMessage(interaction.guild!, data)
+        await updateWeedBotMessage(interaction.guild!, data)
       }
 
       await interaction.followUp({ content: 'Werte wurden neu geladen', ephemeral: true })
@@ -57,7 +57,7 @@ export const botCommands = [
         // add new value
         data.payouts.rate.push({ user: displayId, percent: kurs / 100 })
         
-        await updateBotMessage(interaction.guild!, data)
+        await updateWeedBotMessage(interaction.guild!, data)
 
         await interaction.followUp({
           content: `Kurs für ${member} wurde auf \`${interaction.options.getInteger('kurs')}%\` gesetzt` 
@@ -73,7 +73,7 @@ export const botCommands = [
       
       const data = await getEmbedData(interaction.guild!)
       data.payouts.price = interaction.options.getInteger('preis')!
-      await updateBotMessage(interaction.guild!, data)
+      await updateWeedBotMessage(interaction.guild!, data)
 
       await interaction.followUp({
         content: `Preis pro 🌿 Blatt wurde auf \`${interaction.options.getInteger('preis')}\` gesetzt`
@@ -122,7 +122,7 @@ export const botCommands = [
           content: `Auszahlung für ${member} wurde auf \`${formatMoney(remainingPayout)}\` gesetzt`
         })
 
-        await updateBotMessage(interaction.guild!, data)
+        await updateWeedBotMessage(interaction.guild!, data)
       }
     }
   },

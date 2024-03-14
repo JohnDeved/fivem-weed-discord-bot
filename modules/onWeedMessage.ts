@@ -1,5 +1,5 @@
 import { GuildMember, Message, Role, User } from 'discord.js'
-import { updateBotMessage } from './getBotMessage'
+import { updateWeedBotMessage } from './getWeedBotMessage'
 import { getEmbedData } from './getEmbedData'
 import { logMessage } from './logMessage'
 
@@ -75,7 +75,7 @@ export async function onWeedMessage(message: Message) {
     }
   }
 
-  await updateBotMessage(message.guild!, embedData)
+  await updateWeedBotMessage(message.guild!, embedData)
 
   // react to original message with checkmark
   await message.react('✅')

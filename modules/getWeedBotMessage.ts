@@ -4,7 +4,7 @@ import { createMessage } from './createMessage';
 import { logStateData } from './logStateData';
 import { setState } from './memoryState';
 
-export async function getBotMessage(guild: Guild) {
+export async function getWeedBotMessage(guild: Guild) {
   // get channel named weed-labor-bot
   const channel = guild?.channels.cache.find(channel => channel.name.includes('weed-labor-bot'));
 
@@ -27,9 +27,9 @@ export async function getBotMessage(guild: Guild) {
   throw new Error('Bot message is missing 2');
 }
 
-export async function updateBotMessage(guild: Guild, data: WeedEmbedData) {
+export async function updateWeedBotMessage(guild: Guild, data: WeedEmbedData) {
   setState(guild, data)
   await logStateData(guild, data)
-  const botMessage = await getBotMessage(guild)
+  const botMessage = await getWeedBotMessage(guild)
   await botMessage.edit(createMessage(data))
 }

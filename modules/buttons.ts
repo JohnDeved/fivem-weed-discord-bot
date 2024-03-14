@@ -1,5 +1,5 @@
 import { ButtonBuilder, ButtonInteraction, ButtonStyle, Guild, User } from "discord.js"
-import { updateBotMessage } from "./getBotMessage"
+import { updateWeedBotMessage } from "./getWeedBotMessage"
 import { getEmbedData } from "./getEmbedData"
 import { logMessage } from "./logMessage"
 import { LabMachinesKeys, WeedEmbedData } from "./types/types"
@@ -50,7 +50,7 @@ export async function checkMachine(guild: Guild) {
     if (data.machines.powder.amount > 0) {
       data.lab.powder.amount += (NeededMaterials.PowderMachine / 10)
       data.machines.powder.amount = 0
-      await updateBotMessage(guild, data)
+      await updateWeedBotMessage(guild, data)
     }
 
   }
@@ -59,7 +59,7 @@ export async function checkMachine(guild: Guild) {
     if (data.machines.blunts.amount > 0) {
       data.lab.blunts.amount += data.machines.blunts.amount
       data.machines.blunts.amount = 0
-      await updateBotMessage(guild, data)
+      await updateWeedBotMessage(guild, data)
     }
   }
 }
@@ -96,7 +96,7 @@ function createMachineButton(id: LabMachinesKeys, emoji: string, time: number) {
     else data.lab.leaves.amount -= NeededMaterials.PowderMachine
     
     await logMessage(interaction.guild!, `Die ${id === 'blunts' ? '🚬 Blunt' : '🍚 Puder'} Maschine wurde von <@${interaction.user.id}> gestartet`)
-    await updateBotMessage(interaction.guild!, data)
+    await updateWeedBotMessage(interaction.guild!, data)
     await interaction.followUp({ content: `Ich werde dich benachrichtigen, wenn die ${emoji} Maschine fertig ist`, ephemeral: true })
   }
   
