@@ -1,10 +1,8 @@
 import { Guild } from "discord.js";
-import { getServerInfo } from "./getServerInfo";
+import { ServerInfo, getServerInfo } from "./getServerInfo";
 
-export async function getOnlinePlayers(guild: Guild) {
+export async function getOnlinePlayers(guild: Guild, serverInfo: ServerInfo) {
   const members = await guild.members.fetch({ limit: 100 })
-
-  const serverInfo = await getServerInfo()
 
   const onlineIds = serverInfo.Data.players
     .map(player => player.identifiers.find(id => id.includes('discord:')))

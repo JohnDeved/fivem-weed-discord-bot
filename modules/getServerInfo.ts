@@ -1,6 +1,7 @@
 export interface ServerInfo {
   EndPoint: string
   Data: Data
+  lastRestart: number | null
 }
 
 export interface Data {
@@ -59,6 +60,7 @@ export interface Player {
   ping: number
 }
 
+let lastDetectedRestart: number | null = null
 
 export async function getServerInfo () {
   const serverInfo = await fetch('https://servers-frontend.fivem.net/api/servers/single/qpd3z9')
@@ -68,11 +70,16 @@ export async function getServerInfo () {
   const serverIp = serverInfo.Data.connectEndPoints[0]
 
   // get realtime player info
-  const realTimePlayerInfo = await fetch(`http://${serverIp}/players.json`)
+  serverInfo.Data.players = await fetch(`http://${serverIp}/players.json`)
     .then<Player[]>(res => res.json())
-    .catch(() => serverInfo.Data.players)
+    .catch(() => {
+      lastDetectedRestart = Date.now()
+      console.log('Error fetching players.json, this might be a restart', lastDetectedRestart)
+      return serverInfo.Data.players
+    })
 
-  serverInfo.Data.players = realTimePlayerInfo
+  // set last restart time
+  serverInfo.lastRestart = lastDetectedRestart
 
   return serverInfo
 }
