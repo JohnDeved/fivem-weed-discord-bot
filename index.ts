@@ -19,10 +19,6 @@ const client = new Client({
 })
 
 client.once('ready', async client => {
-  client.user?.setActivity('zoey + john = <3', {
-    type: ActivityType.Watching
-  })
-
   // find all channels named weed-labor-bot
   const channels = client.channels.cache.filter((channel): channel is TextChannel => 
     channel instanceof TextChannel && channel.name.includes('weed-labor-bot')
