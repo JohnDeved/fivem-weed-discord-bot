@@ -7,7 +7,8 @@
     "start": "tsx index.ts",
     "dev": "tsx watch index.ts",
     "deploy": "flyctl deploy",
-    "stop": "flyctl machine stop"
+    "stop": "flyctl machine stop",
+    "logs": "flyctl logs"
   },
   "author": "",
   "license": "ISC",
