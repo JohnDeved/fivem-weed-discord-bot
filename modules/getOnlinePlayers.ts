@@ -17,6 +17,10 @@ export async function getOnlinePlayers(guild: Guild, serverInfo: ServerInfo) {
         return false
       }
 
+      if (!roles.includes('Kavkaz')) {
+        return false
+      }
+
       return true
     })
 
