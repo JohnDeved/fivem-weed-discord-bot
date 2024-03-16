@@ -31,10 +31,16 @@ export async function onBotInit (guild: Guild) {
           // notify each online player
           for (const member of onlinePlayers.values()) {
             // send embed with relative time
-            member.send({
+            await member.send({
               embeds: [{
                 description: `# Airdrop Info:\n 📦 Der Airdrop landet <t:${Math.round(airDropTime / 1000)}:R>`
               }]
+            })
+            .then(() => {
+              console.log('Airdrop notify sent to', member.displayName)
+            })
+            .catch(e => {
+              console.error('Airdrop notify error', e)
             })
           }
         }
