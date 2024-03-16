@@ -43,7 +43,7 @@ export async function onBotInit (guild: Guild) {
       // reset airdrop notify
       if (serverInfo.lastRestart && hasAirdropNotified && serverInfo.lastRestart + AIRDROP_TIME > Date.now()) {
         hasAirdropNotified = false
-        console.log('Airdrop notify reset, next airdrop at', new Date(serverInfo.lastRestart + AIRDROP_TIME).toLocaleString())
+        console.log('Airdrop notify reset, next airdrop at', new Date(serverInfo.lastRestart + AIRDROP_TIME).toLocaleString('de-DE', { timeZone: 'Europe/Berlin' }))
       }
     }, 1000 * 5)
   }
