@@ -1,7 +1,8 @@
-import { Client, User } from "discord.js"
+import { Client, User, Message } from "discord.js"
 
 const DEV_ID = '124948849893703680'
-let cachedDevUser: User | null = null
+let cachedDevUser: User | undefined
+let cachedMessage: Message | undefined
 
 interface PresistentData {
   lastRestart?: number
@@ -17,15 +18,17 @@ async function getCachedMessage(client: Client<boolean>) {
     await cachedDevUser.createDM()
   }
 
-  const pinnedMessage = await cachedDevUser.dmChannel!.messages.fetchPinned().then(pinned => pinned.first())
+  if (!cachedMessage) {
+    cachedMessage = await cachedDevUser.dmChannel!.messages.fetchPinned().then(pinned => pinned.first())
 
-  // if no pinned message, create one
-  if (!pinnedMessage) {
-    const message = await cachedDevUser.dmChannel!.send('{}')
-    await message.pin()
+    // if no pinned message, create one
+    if (!cachedMessage) {
+      cachedMessage = await cachedDevUser.dmChannel!.send('{}')
+      await cachedMessage.pin()
+    }
   }
 
-  return pinnedMessage
+  return cachedMessage
 }
 
 export async function getPersistentData (client: Client): Promise<PresistentData> {
