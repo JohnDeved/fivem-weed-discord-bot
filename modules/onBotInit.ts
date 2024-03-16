@@ -40,7 +40,7 @@ export async function onBotInit (guild: Guild) {
               console.log('Airdrop notify sent to', member.displayName)
             })
             .catch(e => {
-              console.error('Airdrop notify error', e)
+              console.error('Airdrop notify error', member.displayName, e)
             })
           }
         }
