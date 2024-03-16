@@ -4,21 +4,21 @@ import { getOnlinePlayers } from "./getOnlinePlayers"
 import { getServerInfo } from "./getServerInfo"
 
 export async function onBotInit (guild: Guild) {
-  console.log(guild.client.user, 'ready')
+  const client = guild.client
+  console.log(client.user.displayName, 'ready', guild.name)  
 
   if (guild.name.includes('Kavkaz')) {
     // airdrop time 4 hours after restart
     const AIRDROP_TIME = 1000 * 60 * 60 * 4
     // notify 5 minutes before airdrop
     const AIRDROP_NOTIFY_TIME = 1000 * 60 * 5
-    let hasAirdropNotified = false
+    let hasAirdropNotified = true
 
     setInterval(async () => {
-      const serverInfo = await getServerInfo()
-
+      const serverInfo = await getServerInfo(client)
       const onlinePlayers = await getOnlinePlayers(guild, serverInfo)
       
-      guild.client.user.setActivity(`${onlinePlayers.size ? '🟢' : '🟡'} ${onlinePlayers.size} Kavkaz Online`, {
+      client.user.setActivity(`${onlinePlayers.size ? '🟢' : '🟡'} ${onlinePlayers.size} Kavkaz Online`, {
         type: ActivityType.Custom
       })
 
@@ -39,7 +39,12 @@ export async function onBotInit (guild: Guild) {
           }
         }
       }
-  
+
+      // reset airdrop notify
+      if (serverInfo.lastRestart && hasAirdropNotified && serverInfo.lastRestart + AIRDROP_TIME > Date.now()) {
+        hasAirdropNotified = false
+        console.log('Airdrop notify reset, next airdrop at', new Date(serverInfo.lastRestart + AIRDROP_TIME).toLocaleString())
+      }
     }, 1000 * 5)
   }
   

@@ -1,3 +1,7 @@
+import { fail } from "assert"
+import { getPersistentData, setPersistentData } from "./persistentData"
+import { Client } from "discord.js"
+
 export interface ServerInfo {
   EndPoint: string
   Data: Data
@@ -61,20 +65,36 @@ export interface Player {
 }
 
 let lastDetectedRestart: number | null = null
+let gotPresitentData = false
+let failCount = 0
 
-export async function getServerInfo () {
+export async function getServerInfo (client: Client) {
   const serverInfo = await fetch('https://servers-frontend.fivem.net/api/servers/single/qpd3z9')
     .then<ServerInfo>(res => res.json())
 
   // get server ip
   const serverIp = serverInfo.Data.connectEndPoints[0]
 
+  if (!gotPresitentData) {
+    const persistentData = await getPersistentData(client)
+    if (persistentData.lastRestart) lastDetectedRestart = persistentData.lastRestart
+    gotPresitentData = true
+  }
+
   // get realtime player info
   serverInfo.Data.players = await fetch(`http://${serverIp}/players.json`)
-    .then<Player[]>(res => res.json())
-    .catch(() => {
-      lastDetectedRestart = Date.now()
-      console.log('Error fetching players.json, this might be a restart', lastDetectedRestart)
+    .then<Player[]>(async res => {
+      const json = await res.json()
+      failCount = 0
+      return json
+    })
+    .catch(async () => {
+      console.log('Error fetching players.json', lastDetectedRestart, ++failCount)
+      if (failCount >= 3) {
+        console.log('Failed to fetch players.json 3 times in a row, this might be a restart')
+        lastDetectedRestart = Date.now()
+        await setPersistentData(client, { lastRestart: lastDetectedRestart })
+      }
       return serverInfo.Data.players
     })
 
