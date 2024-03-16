@@ -4,6 +4,8 @@ import { updateWeedBotMessage } from "./getWeedBotMessage";
 import { getEmbedData } from "./getEmbedData";
 import { getDisplayId } from "./onWeedMessage";
 import { formatMoney } from "./createEmbed";
+import { getOnlinePlayers } from "./getOnlinePlayers";
+import { getServerInfo } from "./getServerInfo";
 
 export const botCommands = [
   {
@@ -151,6 +153,22 @@ Groß/Kleinschreibung müsst ihr nicht beachten.
       `;
   
       await interaction.reply({ content: helpMessage });
+    }
+  },
+  {
+    command: new SlashCommandBuilder().setName('who').setDescription('Zeigt Wer gerade online ist'),
+    callback: async (interaction: ChatInputCommandInteraction) => {
+      await interaction.deferReply({ ephemeral: true })
+
+      const serverInfo = await getServerInfo(interaction.guild!.client)
+      const onlinePlayers = await getOnlinePlayers(interaction.guild!, serverInfo)
+      
+      await interaction.followUp({ content: `Aktuell sind ${onlinePlayers.size} Kavkaz online`, embeds: [
+        {
+          title: 'Online Spieler',
+          description: onlinePlayers.map(p => p.toString()).join('\n')
+        }
+      ]})
     }
   }
 ]
